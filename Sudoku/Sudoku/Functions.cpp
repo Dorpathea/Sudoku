@@ -10,18 +10,21 @@ using namespace std;
 
 //void generate_puzzle(vector<vector<int>> &correct, vector<vector<int>> &guess) {
 void generate_puzzle() {
-	// Row 1 = top left square
+	//
+	vector<int> set = {1,2,3,4,5,6,7,8,9};
+	int t1, t2, t3;
+
 
 	// Set temp to correct
-	vector<vector<int>> temp = {{1,2,3,4,5,6,7,8,9},
+	vector<vector<int>> temp = {{0,0,0,0,0,0,0,0,0},
 								{0,0,0,0,0,0,0,0,0},
 								{0,0,0,0,0,0,0,0,0},
 								{0,0,0,0,0,0,0,0,0},
-								{1,2,3,4,5,6,7,8,9},
 								{0,0,0,0,0,0,0,0,0},
 								{0,0,0,0,0,0,0,0,0},
 								{0,0,0,0,0,0,0,0,0},
-								{1,2,3,4,5,6,7,8,9} }; // Sudoku puzzle start template
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0} }; // Sudoku puzzle start template
 
 	// To obtain a time based random seed
 	// GeeksforGeeks
@@ -29,16 +32,26 @@ void generate_puzzle() {
 	srand(seed);
 
 	// Suffle elements of 9x9 squares on the diagonal (they don't interact with each other)
-	random_shuffle(temp[0].begin(), temp[0].end());
-	random_shuffle(temp[4].begin(), temp[4].end());
-	random_shuffle(temp[8].begin(), temp[8].end());
+	for (int i = 0; i < 3; i++) {
+
+		random_shuffle(set.begin(), set.end());
+
+		for (int j = 0; j < 3; j++) {
+			for (int k = 0; k < 3; k++) {
+				t1 = j + (i * 3);
+				t2 = k + (i * 3);
+				t3 = k + (j * 3);
+				temp[t1][t2] = set[t3];
+			}
+		}
+	}
 
 	// Fill in rest of boxes
-	for (int i = 1; i < 10; i++) {
+	/*for (int i = 1; i < 10; i++) {
 		if (check_row(i) && check_column(i) && check_box(i)) {
 			correct[][] = i;
 		}
-	}
+	}*/
 
 
 	// Print current sudoku for error checking
@@ -52,9 +65,7 @@ void generate_puzzle() {
 
 }
 
-bool check_row(int value) {
-
-}
+bool check_row(int value);
 
 bool check_column(int value);
 
