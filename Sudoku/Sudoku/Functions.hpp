@@ -16,11 +16,11 @@ void display_puzzle_map();
 
 void setup_game();
 
-bool check_row(int value);
+bool check_row(vector<vector<int>>& temp, int current_val, int current_col);
 
-bool check_column(int value);
+bool check_column(vector<vector<int>>& temp, int current_val, int current_row);
 
-bool check_box(int value);
+bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int current_col);
 
 
 // Solve a puzzle

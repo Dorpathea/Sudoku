@@ -10,7 +10,8 @@ using namespace std;
 
 //void generate_puzzle(vector<vector<int>> &correct, vector<vector<int>> &guess) {
 void generate_puzzle() {
-	//
+
+	// Variables
 	vector<int> set = {1,2,3,4,5,6,7,8,9};
 	int t1, t2, t3;
 
@@ -46,12 +47,16 @@ void generate_puzzle() {
 		}
 	}
 
-	// Fill in rest of boxes
-	/*for (int i = 1; i < 10; i++) {
-		if (check_row(i) && check_column(i) && check_box(i)) {
-			correct[][] = i;
+	// Fill in rest of puzzle
+	for (int row = 0; row < 9; row++) {
+		for (int col = 0; col < 9; col++) {
+			for (int val = 1; val < 10; val++) {
+				if (check_row(temp, val, col) && check_column(temp, val, row) && check_box(temp, val, row, col) && (temp[row][col] == 0)) {
+					temp[row][col] = val;
+				}
+			}
 		}
-	}*/
+	}
 
 
 	// Print current sudoku for error checking
@@ -65,11 +70,28 @@ void generate_puzzle() {
 
 }
 
-bool check_row(int value);
+bool check_row(vector<vector<int>>& temp, int current_val, int current_col) {
 
-bool check_column(int value);
+	for (int i = 0; i < 9; i++) {
+		if (temp[i][current_col] == current_val) return false;
+	}
+	return true;
+}
 
-bool check_box(int value);
+bool check_column(vector<vector<int>>& temp, int current_val, int current_row) {
+	for (int j = 0; j < 9; j++) {
+		if (temp[current_row][j] == current_val) return false;
+	}
+	return true;
+}
+
+bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int current_col) {
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+
+		}
+	}
+}
 
 void setup_game();
 
