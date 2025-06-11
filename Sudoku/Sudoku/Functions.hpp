@@ -2,10 +2,9 @@
 
 #pragma once
 #include <vector>
-
+using namespace std;
 
 // Create a puzzle
-
 
 //void generate_puzzle(vector<vector<int>> &correct, vector<vector<int>> &guess);
 void generate_puzzle();
@@ -21,6 +20,7 @@ bool check_row(vector<vector<int>>& temp, int current_val, int current_col);
 bool check_column(vector<vector<int>>& temp, int current_val, int current_row);
 
 bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int current_col);
+
 
 
 // Solve a puzzle

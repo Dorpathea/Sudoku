@@ -8,6 +8,70 @@ using namespace std;
 // Create a puzzle
 
 
+bool check_row(vector<vector<int>>& temp, int current_val, int current_col) {
+
+	for (int i = 0; i < 9; i++) {
+		if (temp[i][current_col] == current_val) return false;
+	}
+	return true;
+}
+
+bool check_column(vector<vector<int>>& temp, int current_val, int current_row) {
+	for (int j = 0; j < 9; j++) {
+		if (temp[current_row][j] == current_val) return false;
+	}
+	return true;
+}
+
+bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int current_col) {
+
+	int offset_col, offset_row, row_val, col_val;
+
+	switch (current_row) {
+	case(0):
+	case(3):
+	case(6):
+		offset_row = 0;
+		break;
+	case(1):
+	case(4):
+	case(7):
+		offset_row = 1;
+		break;
+	case(2):
+	case(5):
+	case(8):
+		offset_row = 2;
+		break;
+	}
+	switch (current_col) {
+	case(0):
+	case(3):
+	case(6):
+		offset_col = 0;
+		break;
+	case(1):
+	case(4):
+	case(7):
+		offset_col = 1;
+		break;
+	case(2):
+	case(5):
+	case(8):
+		offset_col = 2;
+		break;
+	}
+
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			row_val = current_row - offset_row + i;
+			col_val = current_col - offset_col + j;
+			if (temp[row_val][col_val] == current_val) return false;
+		}
+		return true;
+	}
+}
+
 //void generate_puzzle(vector<vector<int>> &correct, vector<vector<int>> &guess) {
 void generate_puzzle() {
 
@@ -70,28 +134,7 @@ void generate_puzzle() {
 
 }
 
-bool check_row(vector<vector<int>>& temp, int current_val, int current_col) {
 
-	for (int i = 0; i < 9; i++) {
-		if (temp[i][current_col] == current_val) return false;
-	}
-	return true;
-}
-
-bool check_column(vector<vector<int>>& temp, int current_val, int current_row) {
-	for (int j = 0; j < 9; j++) {
-		if (temp[current_row][j] == current_val) return false;
-	}
-	return true;
-}
-
-bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int current_col) {
-	for (int i = 0; i < 9; i++) {
-		for (int j = 0; j < 9; j++) {
-
-		}
-	}
-}
 
 void setup_game();
 
