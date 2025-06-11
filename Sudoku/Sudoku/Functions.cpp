@@ -72,6 +72,15 @@ bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int 
 	}
 }
 
+bool not_valid(vector<vector<int>>& temp) {
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			if (temp[i][j] == 0) return true;
+		}
+	}
+	return false;
+}
+
 //void generate_puzzle(vector<vector<int>> &correct, vector<vector<int>> &guess) {
 void generate_puzzle() {
 
@@ -131,6 +140,8 @@ void generate_puzzle() {
 		}
 		cout << "\n";
 	}
+
+	if (not_valid(temp)) generate_puzzle();
 
 }
 

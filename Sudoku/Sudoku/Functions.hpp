@@ -9,6 +9,8 @@ using namespace std;
 //void generate_puzzle(vector<vector<int>> &correct, vector<vector<int>> &guess);
 void generate_puzzle();
 
+bool not_valid(vector<vector<int>>& temp);
+
 void display_puzzle();
 
 void display_puzzle_map();
