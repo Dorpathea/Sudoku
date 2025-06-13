@@ -87,6 +87,11 @@ int main()
     // Solve a puzzle
     case(2):
         cout << "Let's Solve a Puzzle!\n";
+
+        //puzzle_correct = Get_puzzle();
+
+        //Sudoku_solve(puzzle_correct);
+
         break;
 
     // Quit

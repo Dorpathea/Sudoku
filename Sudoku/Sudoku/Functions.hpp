@@ -9,6 +9,10 @@ using namespace std;
 //void generate_puzzle(vector<vector<int>> &correct, vector<vector<int>> &guess);
 void generate_puzzle();
 
+//vector<vector<int>> Get_puzzle();
+
+bool Sudoku_solve(vector<vector<int>>& puzzle);
+
 bool not_valid(vector<vector<int>>& temp);
 
 void display_puzzle();

@@ -5,8 +5,8 @@
 #include <random> 
 using namespace std;
 
-// Create a puzzle
 
+// Create a puzzle
 
 bool check_row(vector<vector<int>>& temp, int current_val, int current_col) {
 
@@ -25,52 +25,76 @@ bool check_column(vector<vector<int>>& temp, int current_val, int current_row) {
 
 bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int current_col) {
 
-	int offset_col, offset_row, row_val, col_val;
+	int row_val, col_val;
 
-	switch (current_row) {
-	case(0):
-	case(3):
-	case(6):
-		offset_row = 0;
-		break;
-	case(1):
-	case(4):
-	case(7):
-		offset_row = 1;
-		break;
-	case(2):
-	case(5):
-	case(8):
-		offset_row = 2;
-		break;
-	}
-	switch (current_col) {
-	case(0):
-	case(3):
-	case(6):
-		offset_col = 0;
-		break;
-	case(1):
-	case(4):
-	case(7):
-		offset_col = 1;
-		break;
-	case(2):
-	case(5):
-	case(8):
-		offset_col = 2;
-		break;
-	}
+	// More concise way of doing this
+	int offset_row = current_row - (current_row % 3);
+	int offset_col = current_col - (current_col % 3);
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			row_val = current_row - offset_row + i;
-			col_val = current_col - offset_col + j;
+			row_val = offset_row + i;
+			col_val = offset_col + j;
 			if (temp[row_val][col_val] == current_val) return false;
 		}
 		return true;
 	}
 }
+
+vector<vector<int>> Get_puzzle() {
+	int value;
+	vector<vector<int>> temp = {{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0} }; // Sudoku puzzle start template
+
+	// Use do while loop for error checking
+	cout << "Please Enter the digits of your puzzle: \n";
+	cin >> value;
+
+	return temp;
+}
+
+bool Sudoku_solve(vector<vector<int>>& puzzle, int row = 0, int col = 0) {
+
+	// Check if @ end of matrix, if so done!
+	if ((row == 8) && (col >= 9)) return true;
+
+	// Check if @ end of row, if so increment row and restart column
+	if (col >= 9) {
+		row++;
+		col = 0;
+	}
+
+	// Check if cell already full
+	if (puzzle[row][col] != 0) return Sudoku_solve(puzzle, row, (col + 1));
+
+	// For loop: Check if able to place number
+	for (int val = 1; val < 10; val++) {
+		if (check_row(puzzle, val, col) && check_column(puzzle, val, row) && check_box(puzzle, val, row, col)) {
+			// Set number
+			puzzle[row][col] = val;
+
+			// If statement: Recursively iterate with next in row (col + 1)
+			if (Sudoku_solve(puzzle, row, (col + 1))) {
+				// Return true in loop
+				return true;
+			}
+			// Set matrix value to 0 out of loop to backtrack if needed
+			puzzle[row][col] = 0;
+		}
+	}
+
+	// return false out of loop
+	return false;
+}
+
+
 
 bool not_valid(vector<vector<int>>& temp) {
 	for (int i = 0; i < 9; i++) {
@@ -121,7 +145,7 @@ void generate_puzzle() {
 	}
 
 	// Fill in rest of puzzle
-	for (int row = 0; row < 9; row++) {
+	/*for (int row = 0; row < 9; row++) {
 		for (int col = 0; col < 9; col++) {
 			for (int val = 1; val < 10; val++) {
 				if (check_row(temp, val, col) && check_column(temp, val, row) && check_box(temp, val, row, col) && (temp[row][col] == 0)) {
@@ -129,7 +153,10 @@ void generate_puzzle() {
 				}
 			}
 		}
-	}
+	}*/
+
+	Sudoku_solve(temp, 0, 0);
+
 
 
 	// Print current sudoku for error checking
@@ -141,7 +168,7 @@ void generate_puzzle() {
 		cout << "\n";
 	}
 
-	if (not_valid(temp)) generate_puzzle();
+	//if (not_valid(temp)) generate_puzzle();
 
 }
 
