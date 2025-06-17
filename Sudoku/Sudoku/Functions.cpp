@@ -8,6 +8,9 @@ using namespace std;
 
 // Create a puzzle
 
+// Randomize from 1-9
+
+// Check if the current number is already in the row
 bool check_row(vector<vector<int>>& temp, int current_val, int current_col) {
 
 	for (int i = 0; i < 9; i++) {
@@ -16,6 +19,7 @@ bool check_row(vector<vector<int>>& temp, int current_val, int current_col) {
 	return true;
 }
 
+// Check if the current number is already in the column
 bool check_column(vector<vector<int>>& temp, int current_val, int current_row) {
 	for (int j = 0; j < 9; j++) {
 		if (temp[current_row][j] == current_val) return false;
@@ -23,6 +27,7 @@ bool check_column(vector<vector<int>>& temp, int current_val, int current_row) {
 	return true;
 }
 
+// Check if the current number is already in the box
 bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int current_col) {
 
 	int row_val, col_val;
@@ -41,6 +46,7 @@ bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int 
 	}
 }
 
+// Take puzzle in from user
 vector<vector<int>> Get_puzzle() {
 	int value;
 	vector<vector<int>> temp = {{0,0,0,0,0,0,0,0,0},
@@ -60,7 +66,11 @@ vector<vector<int>> Get_puzzle() {
 	return temp;
 }
 
-bool Sudoku_solve(vector<vector<int>>& puzzle, int row = 0, int col = 0) {
+// Solve the Sudoku puzzle (used also to create a puzzle)
+bool Sudoku_solve(vector<vector<int>>& puzzle, int row = 0, int col = 0, bool remove = false, int ran_row = 0, int ran_col = 0, int ran_val = 0) {
+
+	bool mode = remove;
+	cout << "Mode: " << mode << "\n";
 
 	// Check if @ end of matrix, if so done!
 	if ((row == 8) && (col >= 9)) return true;
@@ -72,21 +82,28 @@ bool Sudoku_solve(vector<vector<int>>& puzzle, int row = 0, int col = 0) {
 	}
 
 	// Check if cell already full
-	if (puzzle[row][col] != 0) return Sudoku_solve(puzzle, row, (col + 1));
+	if (puzzle[row][col] != 0) return Sudoku_solve(puzzle, row, (col + 1), mode, 0, 0, 0);
 
 	// For loop: Check if able to place number
 	for (int val = 1; val < 10; val++) {
 		if (check_row(puzzle, val, col) && check_column(puzzle, val, row) && check_box(puzzle, val, row, col)) {
-			// Set number
-			puzzle[row][col] = val;
+			
+			cout << remove << "\n";
 
-			// If statement: Recursively iterate with next in row (col + 1)
-			if (Sudoku_solve(puzzle, row, (col + 1))) {
-				// Return true in loop
-				return true;
+			// Used to check if we're doing a remove number check
+			if ((remove == false) || ((remove == true) && (row != ran_row) && (col != ran_col) && (val != ran_val))) {
+
+				// Set number
+				puzzle[row][col] = val;
+
+				// If statement: Recursively iterate with next in row (col + 1)
+				if (Sudoku_solve(puzzle, row, (col + 1), mode, 0, 0, 0)) {
+					// Return true in loop
+					return true;
+				}
+				// Set matrix value to 0 out of loop to backtrack if needed
+				puzzle[row][col] = 0;
 			}
-			// Set matrix value to 0 out of loop to backtrack if needed
-			puzzle[row][col] = 0;
 		}
 	}
 
@@ -94,8 +111,60 @@ bool Sudoku_solve(vector<vector<int>>& puzzle, int row = 0, int col = 0) {
 	return false;
 }
 
+// Remove numbers in puzzle while still having only 1 solution
+bool remove_numbers(int num_remove, vector<vector<int>>& puzzle) {
+	// Randomly pick 2 numbers for row and column
+	// Remove number at that location and see if any other number works there
+	// If one does, put it back to original
+	// If one doesn't keep it removed and increment remove count
+	// Check if remove count == num_remove (aka we're done)
+
+	int remove_count = 0;
+	int ran_row, ran_col;
+	int current_val;
+
+	if (remove_count == num_remove) return true;
+
+	ran_row = (rand() % 9) + 1;
+	ran_col = (rand() % 9) + 1;
+
+	//cout << ran_row << "\n";
+	//cout << ran_col << "\n";
+
+	// Check if a number has already been removed from this spot
+	if (puzzle[ran_row][ran_col] == 0) {
+		return remove_numbers(num_remove, puzzle);
+	}
+
+	current_val = puzzle[ran_row][ran_col];
+
+	// Check if the puzzle can be solved with a different value than the one in the square (more than one solution to the puzzle)
+	if (Sudoku_solve(puzzle, 0, 0, true, ran_row, ran_col, current_val)) {
+		puzzle[ran_row][ran_col] = current_val;
+	}
+
+	// Remove the value if no solution
+	else {
+		puzzle[ran_row][ran_col] = 0;
+		remove_count++;
+	}
+
+	cout << "Remove Count: " << remove_count << "\n";
+
+	if (remove_count != num_remove) {
+		return remove_numbers(num_remove, puzzle);
+	}
+	else {
+		return true;
+	}
+
+	return false;
 
 
+}
+
+
+// Check if the puzzle is not fully filled
 bool not_valid(vector<vector<int>>& temp) {
 	for (int i = 0; i < 9; i++) {
 		for (int j = 0; j < 9; j++) {
@@ -105,6 +174,7 @@ bool not_valid(vector<vector<int>>& temp) {
 	return false;
 }
 
+// Generate a Sudoku puzzle for the user to solve
 //void generate_puzzle(vector<vector<int>> &correct, vector<vector<int>> &guess) {
 void generate_puzzle() {
 
@@ -144,18 +214,17 @@ void generate_puzzle() {
 		}
 	}
 
-	// Fill in rest of puzzle
-	/*for (int row = 0; row < 9; row++) {
-		for (int col = 0; col < 9; col++) {
-			for (int val = 1; val < 10; val++) {
-				if (check_row(temp, val, col) && check_column(temp, val, row) && check_box(temp, val, row, col) && (temp[row][col] == 0)) {
-					temp[row][col] = val;
-				}
-			}
-		}
-	}*/
 
-	Sudoku_solve(temp, 0, 0);
+	// Fill in rest of Sudoku puzzle
+	Sudoku_solve(temp, 0, 0, false, 0, 0, 0);
+
+	// Remove enough numbers for only one solution at random
+
+	// random number generator to pick location to remove
+	// check if it can solve with not using the same removed number
+	//if (remove_numbers(1, temp)) cout << "DONE!\n";
+	//else cout << "FAIL!\n";
+
 
 
 
@@ -176,8 +245,10 @@ void generate_puzzle() {
 
 void setup_game();
 
+// Display what the puzzle currently looks like
 void display_puzzle();
 
+// Display what value each square is associated with for the user to fill (Might not need if choosing to fill a different way)
 void display_puzzle_map() {
 	/*std::cout << "----------------------------\n";
 	std::cout << "|01|02|03|04|05|06|07|08|09|\n";
