@@ -69,8 +69,8 @@ vector<vector<int>> Get_puzzle() {
 // Solve the Sudoku puzzle (used also to create a puzzle)
 bool Sudoku_solve(vector<vector<int>>& puzzle, int row = 0, int col = 0, bool remove = false, int ran_row = 0, int ran_col = 0, int ran_val = 0) {
 
+	// Probably don't need this and can change to just remove where mode is
 	bool mode = remove;
-	cout << "Mode: " << mode << "\n";
 
 	// Check if @ end of matrix, if so done!
 	if ((row == 8) && (col >= 9)) return true;
@@ -82,22 +82,20 @@ bool Sudoku_solve(vector<vector<int>>& puzzle, int row = 0, int col = 0, bool re
 	}
 
 	// Check if cell already full
-	if (puzzle[row][col] != 0) return Sudoku_solve(puzzle, row, (col + 1), mode, 0, 0, 0);
+	if (puzzle[row][col] != 0) return Sudoku_solve(puzzle, row, (col + 1), mode, ran_row, ran_col, ran_val);
 
 	// For loop: Check if able to place number
 	for (int val = 1; val < 10; val++) {
 		if (check_row(puzzle, val, col) && check_column(puzzle, val, row) && check_box(puzzle, val, row, col)) {
-			
-			cout << remove << "\n";
 
-			// Used to check if we're doing a remove number check
-			if ((remove == false) || ((remove == true) && (row != ran_row) && (col != ran_col) && (val != ran_val))) {
+			// Used to check if we're doing a remove number check (Could probably make this statement connected to the is it safe statement
+			if ((remove == false) || ((remove == true) && !((row == ran_row) && (col == ran_col) && (val == ran_val)))) {
 
 				// Set number
 				puzzle[row][col] = val;
 
 				// If statement: Recursively iterate with next in row (col + 1)
-				if (Sudoku_solve(puzzle, row, (col + 1), mode, 0, 0, 0)) {
+				if (Sudoku_solve(puzzle, row, (col + 1), mode, ran_row, ran_col, ran_val)) {
 					// Return true in loop
 					return true;
 				}
@@ -107,57 +105,46 @@ bool Sudoku_solve(vector<vector<int>>& puzzle, int row = 0, int col = 0, bool re
 		}
 	}
 
-	// return false out of loop
+	// Return false out of loop
 	return false;
 }
 
 // Remove numbers in puzzle while still having only 1 solution
-bool remove_numbers(int num_remove, vector<vector<int>>& puzzle) {
+bool remove_numbers(int num_remove, int remove_count, vector<vector<int>>& puzzle) {
 	// Randomly pick 2 numbers for row and column
 	// Remove number at that location and see if any other number works there
 	// If one does, put it back to original
 	// If one doesn't keep it removed and increment remove count
 	// Check if remove count == num_remove (aka we're done)
 
-	int remove_count = 0;
 	int ran_row, ran_col;
 	int current_val;
 
 	if (remove_count == num_remove) return true;
 
-	ran_row = (rand() % 9) + 1;
-	ran_col = (rand() % 9) + 1;
-
-	//cout << ran_row << "\n";
-	//cout << ran_col << "\n";
+	// Pick a random row and column
+	ran_row = (rand() % 9);
+	ran_col = (rand() % 9);
 
 	// Check if a number has already been removed from this spot
-	if (puzzle[ran_row][ran_col] == 0) {
-		return remove_numbers(num_remove, puzzle);
-	}
+	if (puzzle[ran_row][ran_col] == 0) return remove_numbers(num_remove, remove_count, puzzle);
 
 	current_val = puzzle[ran_row][ran_col];
+	puzzle[ran_row][ran_col] = 0;
+
 
 	// Check if the puzzle can be solved with a different value than the one in the square (more than one solution to the puzzle)
-	if (Sudoku_solve(puzzle, 0, 0, true, ran_row, ran_col, current_val)) {
-		puzzle[ran_row][ran_col] = current_val;
-	}
+	if (Sudoku_solve(puzzle, 0, 0, true, ran_row, ran_col, current_val)) puzzle[ran_row][ran_col] = current_val;
 
 	// Remove the value if no solution
-	else {
-		puzzle[ran_row][ran_col] = 0;
-		remove_count++;
-	}
+	else remove_count++;
 
-	cout << "Remove Count: " << remove_count << "\n";
+	// Do again until enough numbers have been removed from the puzzle
+	if (remove_count != num_remove) return remove_numbers(num_remove, remove_count, puzzle);
 
-	if (remove_count != num_remove) {
-		return remove_numbers(num_remove, puzzle);
-	}
-	else {
-		return true;
-	}
+	else return true;
 
+	// return false out of loop
 	return false;
 
 
@@ -222,8 +209,8 @@ void generate_puzzle() {
 
 	// random number generator to pick location to remove
 	// check if it can solve with not using the same removed number
-	//if (remove_numbers(1, temp)) cout << "DONE!\n";
-	//else cout << "FAIL!\n";
+	if (remove_numbers(9, 0, temp)) cout << "DONE!\n";
+	else cout << "FAIL!\n";
 
 
 

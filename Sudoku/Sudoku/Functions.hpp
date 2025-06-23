@@ -37,7 +37,7 @@ bool check_column(vector<vector<int>>& temp, int current_val, int current_row);
 bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int current_col);
 
 // Remove numbers in puzzle while still having only 1 solution
-bool remove_numbers(int num_remove, vector<vector<int>>& puzzle);
+bool remove_numbers(int num_remove, int remove_count, vector<vector<int>>& puzzle);
 
 
 
