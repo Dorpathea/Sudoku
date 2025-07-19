@@ -49,6 +49,7 @@ bool check_box(vector<vector<int>>& temp, int current_val, int current_row, int 
 // Take puzzle in from user
 vector<vector<int>> Get_puzzle() {
 	int value;
+
 	vector<vector<int>> temp = {{0,0,0,0,0,0,0,0,0},
 								{0,0,0,0,0,0,0,0,0},
 								{0,0,0,0,0,0,0,0,0},
@@ -117,10 +118,26 @@ bool remove_numbers(int num_remove, int remove_count, vector<vector<int>>& puzzl
 	// If one doesn't keep it removed and increment remove count
 	// Check if remove count == num_remove (aka we're done)
 
+	vector<vector<int>> temp = { {0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0},
+								{0,0,0,0,0,0,0,0,0} }; 
+
+	// Set temp to current puzzle values
+	for (int i = 0; i < 9; i++) {
+		for (int j = 0; j < 9; j++) {
+			temp[i][j] = puzzle[i][j];
+		}
+	}
+
+
 	int ran_row, ran_col;
 	int current_val;
-
-	if (remove_count == num_remove) return true;
 
 	// Pick a random row and column
 	ran_row = (rand() % 9);
@@ -130,19 +147,30 @@ bool remove_numbers(int num_remove, int remove_count, vector<vector<int>>& puzzl
 	if (puzzle[ran_row][ran_col] == 0) return remove_numbers(num_remove, remove_count, puzzle);
 
 	current_val = puzzle[ran_row][ran_col];
+	temp[ran_row][ran_col] = 0;
 	puzzle[ran_row][ran_col] = 0;
 
 
 	// Check if the puzzle can be solved with a different value than the one in the square (more than one solution to the puzzle)
-	if (Sudoku_solve(puzzle, 0, 0, true, ran_row, ran_col, current_val)) puzzle[ran_row][ran_col] = current_val;
+	if (Sudoku_solve(temp, 0, 0, true, ran_row, ran_col, current_val)) {
+		puzzle[ran_row][ran_col] = current_val;
+	}
 
 	// Remove the value if no solution
-	else remove_count++;
+	else {
+		remove_count++;
+		//puzzle[ran_row][ran_col] = 0;
+		//cout << "Remove Value (Should be 0): " << puzzle[ran_row][ran_col] << endl;
+	}
 
 	// Do again until enough numbers have been removed from the puzzle
 	if (remove_count != num_remove) return remove_numbers(num_remove, remove_count, puzzle);
 
-	else return true;
+	// Check if we hit the desired removal amount (Used to be else statement)
+	if (remove_count == num_remove) {
+		//cout << "Remove Count: " << remove_count << " Number Removed: " << num_remove << endl;
+		return true;
+	}
 
 	// return false out of loop
 	return false;
@@ -168,6 +196,8 @@ void generate_puzzle() {
 	// Variables
 	vector<int> set = {1,2,3,4,5,6,7,8,9};
 	int t1, t2, t3;
+
+	int zeros = 0;
 
 
 	// Set temp to correct
@@ -205,24 +235,28 @@ void generate_puzzle() {
 	// Fill in rest of Sudoku puzzle
 	Sudoku_solve(temp, 0, 0, false, 0, 0, 0);
 
+
+	// random number between 20 and 40
+	int remove = (rand() % 20 + 20);
+
 	// Remove enough numbers for only one solution at random
-
-	// random number generator to pick location to remove
-	// check if it can solve with not using the same removed number
-	if (remove_numbers(9, 0, temp)) cout << "DONE!\n";
-	else cout << "FAIL!\n";
+	if (remove_numbers(remove, 0, temp)) cout << "DONE!\n";	
+	else cout << "FAIL!\n";	
 
 
-
-
-	// Print current sudoku for error checking
+	// Print current sudoku for error checking: Put into display puzzle when done
 	for (int i = 0; i < 9; i++) {
 		for (int j = 0; j < 9; j++) {
 			cout << temp[i][j];
 			cout << " ";
+			// check amount of 0 in puzzle
+			if (temp[i][j] == 0) zeros += 1;
 		}
 		cout << "\n";
 	}
+
+	// Error Checking to make sure the puzzle has the correct amount of 0s in the puzzle as what was asked of it
+	cout << "The Puzzle should have " << remove << " zeros in it and it has " << zeros << endl;
 
 	//if (not_valid(temp)) generate_puzzle();
 
